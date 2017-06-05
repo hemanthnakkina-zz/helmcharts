@@ -14,34 +14,44 @@ spec:
         app: {{ template "fullname" . }}
       annotations:
         configmap-etc-hash: {{ tuple "configmap-etc.yaml" . | include "helm-toolkit.hash" }}
+        configmap-hosts-hash: {{ tuple "configmap-hosts.yaml" . | include "helm-toolkit.hash" }}
+        configmap-nrpe-hash: {{ tuple "configmap-nrpe.yaml" . | include "helm-toolkit.hash" }}
     spec:
       nodeSelector:
         {{ .Values.labels.node_selector_key }}: {{ .Values.labels.node_selector_value }}
       volumes:
-        - name: nagios-emptydir
-          emptyDir: {}
         - name: nagios-etc
           configMap:
             name: nagios-etc
+        - name: nagios-hosts
+          configMap:
+            name: nagios-hosts
+        - name: nagios-nrpe
+          configMap:
+            name: nagios-nrpe
       containers:
       - name: {{ .Chart.Name }}
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         ports:
         - containerPort: {{ .Values.service.internalPort }}
-        livenessProbe:
-          httpGet:
-            path: /
-            port: {{ .Values.service.internalPort }}
-        readinessProbe:
-          httpGet:
-            path: /
-            port: {{ .Values.service.internalPort }}
+#        livenessProbe:
+#          httpGet:
+#            path: /
+#            port: {{ .Values.service.internalPort }}
+#        readinessProbe:
+#          httpGet:
+#            path: /
+#            port: {{ .Values.service.internalPort }}
         volumeMounts:
-        - name: nagios-emptydir
-          mountPath: /etc/nagios
         - name: nagios-etc
-          mountPath: /etc/nagios/nagios.cfg
+          mountPath: /opt/nagios/etc/nagios.cfg
           subPath: nagios.cfg
+        - name: nagios-hosts
+          mountPath: /opt/nagios/etc/hosts.cfg
+          subPath: hosts.cfg
+        - name: nagios-nrpe
+          mountPath: /etc/nagios/nrpe.cfg
+          subPath: nrpe.cfg
         resources:
 {{ toYaml .Values.resources | indent 12 }}

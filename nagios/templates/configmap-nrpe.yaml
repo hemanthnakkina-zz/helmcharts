@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nagios-nrpe
+  labels:
+    system: openstack
+    type: configuration
+    component: monitoring
+data:
+  nrpe.cfg: |
+{{ tuple "etc/_nrpe.config.tpl" . | include  "helm-toolkit.template" | indent 4 }}

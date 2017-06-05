@@ -14,6 +14,14 @@ service:
   externalPort: 8080
   internalPort: 80
 
+#network:
+#  api:
+#    name: "nagios"
+#    port: 80
+#    node_port:
+#      enabled: true
+#      port: 30100
+
 resources:
   limits:
     cpu: 100m
@@ -29,3 +37,16 @@ labels:
 dependencies:
   service:
   - etcd
+
+conf:
+  hosts:
+  - address: 10.164.229.162
+    host_name: VLCP-1
+    alias: compute-1
+  - address: 10.164.229.157
+    host_name: VLCP-2
+    alias: compute-2
+  - address: 127.0.0.1
+    host_name: nagios_server_container
+    alias: localhost
+

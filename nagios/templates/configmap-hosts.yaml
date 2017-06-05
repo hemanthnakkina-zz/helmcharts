@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nagios-hosts
+  labels:
+    system: openstack
+    type: configuration
+    component: monitoring
+data:
+  hosts.cfg: |
+{{ tuple "etc/_hosts.config.tpl" . | include  "helm-toolkit.template" | indent 4 }}

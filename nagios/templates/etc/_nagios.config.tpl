@@ -27,9 +27,8 @@ log_file=/opt/nagios/var/nagios.log
 
 # You can specify individual object config files as shown below:
 cfg_file=/opt/nagios/etc/hosts.cfg
-cfg_file=/opt/nagios/etc/services.cfg
-#cfg_file=/opt/nagios/etc/servicegroups.cfg
-cfg_file=/opt/nagios/etc/hostgroup.cfg
+#cfg_file=/opt/nagios/etc/services.cfg
+#cfg_file=/opt/nagios/etc/hostgroup.cfg
 
 
 cfg_file=/opt/nagios/etc/objects/commands.cfg
@@ -38,7 +37,7 @@ cfg_file=/opt/nagios/etc/objects/timeperiods.cfg
 cfg_file=/opt/nagios/etc/objects/templates.cfg
 
 # Definitions for monitoring the local (Linux) host
-cfg_file=/opt/nagios/etc/objects/localhost.cfg
+#cfg_file=/opt/nagios/etc/objects/localhost.cfg
 
 # Definitions for monitoring a Windows machine
 #cfg_file=/opt/nagios/etc/objects/windows.cfg

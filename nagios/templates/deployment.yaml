@@ -1,0 +1,47 @@
+{{- $envAll := . }}
+{{- $dependencies := .Values.dependencies }}
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: nagios
+  labels:
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "fullname" . }}
+      annotations:
+        configmap-etc-hash: {{ tuple "configmap-etc.yaml" . | include "helm-toolkit.hash" }}
+    spec:
+      nodeSelector:
+        {{ .Values.labels.node_selector_key }}: {{ .Values.labels.node_selector_value }}
+      volumes:
+        - name: nagios-emptydir
+          emptyDir: {}
+        - name: nagios-etc
+          configMap:
+            name: nagios-etc
+      containers:
+      - name: {{ .Chart.Name }}
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - containerPort: {{ .Values.service.internalPort }}
+        livenessProbe:
+          httpGet:
+            path: /
+            port: {{ .Values.service.internalPort }}
+        readinessProbe:
+          httpGet:
+            path: /
+            port: {{ .Values.service.internalPort }}
+        volumeMounts:
+        - name: nagios-emptydir
+          mountPath: /etc/nagios
+        - name: nagios-etc
+          mountPath: /etc/nagios/nagios.cfg
+          subPath: nagios.cfg
+        resources:
+{{ toYaml .Values.resources | indent 12 }}

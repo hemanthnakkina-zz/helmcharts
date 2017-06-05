@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nagios-etc
+  labels:
+    system: openstack
+    type: configuration
+    component: monitoring
+data:
+  nagios.cfg: |
+{{ tuple "etc/_nagios.config.tpl" . | include  "helm-toolkit.template" | indent 4 }}

@@ -1,0 +1,53 @@
+{{- $envAll := . }}
+{{- $dependencies := .Values.dependencies }}
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: nagios
+  labels:
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "fullname" . }}
+      annotations:
+        configmap-etc-hash: {{ tuple "configmap-etc.yaml" . | include "helm-toolkit.hash" }}
+        configmap-hosts-hash: {{ tuple "configmap-hosts.yaml" . | include "helm-toolkit.hash" }}
+        configmap-nrpe-hash: {{ tuple "configmap-nrpe.yaml" . | include "helm-toolkit.hash" }}
+    spec:
+      nodeSelector:
+        {{ .Values.labels.node_selector_key }}: {{ .Values.labels.node_selector_value }}
+      volumes:
+        - name: nagios-etc
+          configMap:
+            name: nagios-etc
+        - name: nagios-hosts
+          configMap:
+            name: nagios-hosts
+        - name: nagios-nrpe
+          configMap:
+            name: nagios-nrpe
+      containers:
+      - name: {{ .Chart.Name }}
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - name: api-public
+          containerPort: {{ .Values.network.api.port }}
+        readinessProbe:
+          tcpSocket:
+            port: {{ .Values.network.api.port }}
+        volumeMounts:
+        - name: nagios-etc
+          mountPath: /opt/nagios/etc/nagios.cfg
+          subPath: nagios.cfg
+        - name: nagios-hosts
+          mountPath: /opt/nagios/etc/hosts.cfg
+          subPath: hosts.cfg
+        - name: nagios-nrpe
+          mountPath: /etc/nagios/nrpe.cfg
+          subPath: nrpe.cfg
+        resources:
+{{ toYaml .Values.resources | indent 12 }}

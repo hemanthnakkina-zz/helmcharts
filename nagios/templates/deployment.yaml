@@ -34,15 +34,11 @@ spec:
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         ports:
-        - containerPort: {{ .Values.service.internalPort }}
-#        livenessProbe:
-#          httpGet:
-#            path: /
-#            port: {{ .Values.service.internalPort }}
-#        readinessProbe:
-#          httpGet:
-#            path: /
-#            port: {{ .Values.service.internalPort }}
+        - name: api-public
+          containerPort: {{ .Values.network.api.port }}
+        readinessProbe:
+          tcpSocket:
+            port: {{ .Values.network.api.port }}
         volumeMounts:
         - name: nagios-etc
           mountPath: /opt/nagios/etc/nagios.cfg

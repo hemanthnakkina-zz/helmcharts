@@ -14,7 +14,7 @@ define host  {
 define hostgroup{
         hostgroup_name  compute_nodes
         alias           compute_nodes
-        members         VLCP-1,VLCP-2,nagios_server_container
+        members         VLCP-1,VLCP-2
         }
 
 #############################################
